@@ -127,12 +127,12 @@ class CreateOrder(graphene.Mutation):
             raise Exception("At least one product must be selected")
 
         products = []
-        total = 0
+        total = Decimal('0.00')  # Start with Decimal
         for pid in input.product_ids:
             try:
                 product = Product.objects.get(id=pid)
                 products.append(product)
-                total += float(product.price)
+                total += product.price  # Leave it as Decimal
             except Product.DoesNotExist:
                 raise Exception(f"Invalid product ID: {pid}")
 
