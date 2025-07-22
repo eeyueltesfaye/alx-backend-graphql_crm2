@@ -5,6 +5,10 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
 from decimal import Decimal
+import django_filters
+from graphene_django.filter import DjangoFilterConnectionField
+from .filters import CustomerFilter, ProductFilter, OrderFilter
+from .types import CustomerNode, ProductNode, OrderNode
 
 # GraphQL types
 class CustomerType(DjangoObjectType):
@@ -150,9 +154,10 @@ class Mutation(graphene.ObjectType):
     create_order = CreateOrder.Field()
 
 class Query(graphene.ObjectType):
-    all_customers = graphene.List(CustomerType)
-    all_products = graphene.List(ProductType)
-    all_orders = graphene.List(OrderType)
+    all_customers = DjangoFilterConnectionField(CustomerNode)
+    all_products = DjangoFilterConnectionField(ProductNode)
+    all_orders = DjangoFilterConnectionField(OrderNode)
+
 
     def resolve_all_customers(self, info):
         return Customer.objects.all()
